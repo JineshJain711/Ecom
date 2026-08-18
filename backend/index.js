@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 dotenv.config();
 
@@ -19,10 +20,14 @@ app.use(cors({
 app.use(express.json());
 
 connectDB();
-// Serve frontend in production
+app.use('/api/auth', authRoutes);
+app.use('/api/products', ProductRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/payment',paymentRoutes);
+app.use('/api/analytics',analyticsRoutes);
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/build')));
-  
   app.use((req, res) => {
     res.sendFile(path.resolve(__dirname, '../frontend/build/index.html'));
   });
@@ -31,15 +36,8 @@ if (process.env.NODE_ENV === 'production') {
     res.send('ShopNest API is running in Development mode...');
   });
 }
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT,()=>{
-    console.log(`Backend is running on http://localhost:${PORT}`);
-})
-app.use('/api/auth', authRoutes);
-app.use('/api/products', ProductRoutes);
-app.use('/api/orders', ordersRoutes);
-app.use('/api/payment',paymentRoutes);
-app.use('/api/analytics',analyticsRoutes);
-app.get("/", (req,res)=>{
-    res.send("<h1>Backend is Running succesfully</h1>")
-})
+app.listen(PORT, () => {
+  console.log(`Backend is running on http://localhost:${PORT}`);
+});
